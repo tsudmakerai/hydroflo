@@ -6,11 +6,10 @@ import { getDb } from "../db";
 import { products, supplyRoutes, processSteps, faqs } from "../db/schema";
 import { eq } from "drizzle-orm";
 
-const ADMIN_PASSWORD = "admin"; // Very simple password
-
 export async function login(formData: FormData) {
   const password = formData.get("password");
-  if (password === ADMIN_PASSWORD) {
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  if (adminPassword && password === adminPassword) {
     (await cookies()).set("admin_session", "true", { httpOnly: true, secure: true, maxAge: 60 * 60 * 24 });
     redirect("/admin");
   } else {
@@ -58,4 +57,3 @@ export async function seedDatabase() {
   const { seed } = await import("../db/seed");
   await seed();
 }
-
